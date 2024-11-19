@@ -1,5 +1,7 @@
 package com.ykhaleq.airlineticketservice.service;
 
+import com.ykhaleq.airlineticketservice.exception.InvalidRequestException;
+import com.ykhaleq.airlineticketservice.exception.SeatHoldNotFoundException;
 import com.ykhaleq.airlineticketservice.model.Seat;
 import com.ykhaleq.airlineticketservice.model.SeatHold;
 import com.ykhaleq.airlineticketservice.repository.AirplaneLayoutRepository;
@@ -21,7 +23,7 @@ public class SeatServiceTest {
     void setUp() {
         repository = new AirplaneLayoutRepository(new PricingService());
         pricingService = new PricingService();
-        seatService = new SeatService(repository, 120); // 120 seconds for hold expiration
+        seatService = new SeatService(repository, pricingService, 120); // 120 seconds for hold expiration
     }
 
     @Test
@@ -84,28 +86,31 @@ public class SeatServiceTest {
 
     @Test
     void testReserveHeldSeats_InvalidHoldId() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            seatService.reserveHeldSeats(999, "test@example.com"); // Invalid hold ID
+        SeatHoldNotFoundException exception = assertThrows(SeatHoldNotFoundException.class, () -> {
+            seatService.reserveHeldSeats(999, "test@example.com"); // Non-existent hold ID
         });
+
+        // Update the expected message to match the application code
         assertEquals("Invalid hold ID.", exception.getMessage());
     }
 
     @Test
     void testReserveHeldSeats_EmailMismatch() {
-        // Hold some seats
+        // Arrange: Hold some seats
         SeatHold seatHold = seatService.findAndHoldSeats(3, "test@example.com");
 
-        // Attempt to reserve with a different email
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            seatService.reserveHeldSeats(seatHold.getHoldId(), "wrong@example.com");
+        // Act & Assert
+        InvalidRequestException exception = assertThrows(InvalidRequestException.class, () -> {
+            seatService.reserveHeldSeats(seatHold.getHoldId(), "wrong@example.com"); // Email mismatch
         });
+
         assertEquals("Customer email does not match the hold.", exception.getMessage());
     }
 
     @Test
     void testReserveHeldSeats_ExpiredHold() throws InterruptedException {
         // Hold some seats with a very short expiration time
-        SeatService shortExpiryService = new SeatService(repository, 1); // 1 second expiration
+        SeatService shortExpiryService = new SeatService(repository, pricingService, 1); // 1 second expiration
         SeatHold seatHold = shortExpiryService.findAndHoldSeats(3, "test@example.com");
 
         // Wait for the hold to expire

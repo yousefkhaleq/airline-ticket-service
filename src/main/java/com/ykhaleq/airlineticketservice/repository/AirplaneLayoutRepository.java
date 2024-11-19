@@ -2,10 +2,12 @@ package com.ykhaleq.airlineticketservice.repository;
 
 import com.ykhaleq.airlineticketservice.model.SeatingLevel;
 import com.ykhaleq.airlineticketservice.service.PricingService;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class AirplaneLayoutRepository {
     private final List<SeatingLevel> seatingLevels; // Stores all seating levels
     private final PricingService pricingService;   // Handles dynamic pricing logic

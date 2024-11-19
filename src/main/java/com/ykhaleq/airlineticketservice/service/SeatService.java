@@ -1,15 +1,20 @@
 package com.ykhaleq.airlineticketservice.service;
 
+import com.ykhaleq.airlineticketservice.exception.InvalidRequestException;
+import com.ykhaleq.airlineticketservice.exception.SeatHoldNotFoundException;
 import com.ykhaleq.airlineticketservice.model.Seat;
 import com.ykhaleq.airlineticketservice.model.SeatHold;
 import com.ykhaleq.airlineticketservice.model.SeatingLevel;
 import com.ykhaleq.airlineticketservice.repository.AirplaneLayoutRepository;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Service
 public class SeatService {
 
     private final AirplaneLayoutRepository layoutRepository;
@@ -18,11 +23,13 @@ public class SeatService {
     private int holdIdCounter = 1;
     private final int holdExpirationSeconds;
 
-    public SeatService(AirplaneLayoutRepository layoutRepository, int holdExpirationSeconds) {
+    public SeatService(AirplaneLayoutRepository layoutRepository,
+                       PricingService pricingService,
+                       @Value("${seat.hold.expiration.seconds}") int holdExpirationSeconds) {
         this.layoutRepository = layoutRepository;
         this.ticketHolds = new ConcurrentHashMap<>();
         this.holdExpirationSeconds = holdExpirationSeconds;
-        this.pricingService = new PricingService();
+        this.pricingService = pricingService;
     }
 
     /**
@@ -104,10 +111,10 @@ public class SeatService {
 
         // Validate the hold
         if (seatHold == null) {
-            throw new IllegalArgumentException("Invalid hold ID.");
+            throw new SeatHoldNotFoundException("Invalid hold ID.");
         }
         if (!seatHold.getCustomerEmail().equals(customerEmail)) {
-            throw new IllegalArgumentException("Customer email does not match the hold.");
+            throw new InvalidRequestException("Customer email does not match the hold.");
         }
         if (seatHold.isExpired()) {
             // Release the seats if the hold is expired

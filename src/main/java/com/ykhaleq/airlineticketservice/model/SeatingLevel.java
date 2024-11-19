@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SeatingLevel {
-    private final String levelName;  // Name of the level (e.g., "First Class")
+    private final String levelName;  // Name of the level ("First Class", "Business Class")
     private final int rows;          // Number of rows in this level
     private final int seatsPerRow;   // Number of seats in each row
     private final List<Seat> seats;  // List of all seats in this level
