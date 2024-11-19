@@ -3,13 +3,13 @@ package com.ykhaleq.airlineticketservice.model;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class TicketHold {
+public class SeatHold {
     private final int holdId;                // Unique hold identifier
     private final List<Seat> heldSeats;     // List of seats held
     private final String customerEmail;     // Customer's email
     private final LocalDateTime expirationTime; // Expiration time for the hold
 
-    public TicketHold(int holdId, List<Seat> heldSeats, String customerEmail, int holdDurationSeconds) {
+    public SeatHold(int holdId, List<Seat> heldSeats, String customerEmail, int holdDurationSeconds) {
         this.holdId = holdId;
         this.heldSeats = heldSeats;
         this.customerEmail = customerEmail;
@@ -36,15 +36,5 @@ public class TicketHold {
 
     public LocalDateTime getExpirationTime() {
         return expirationTime;
-    }
-
-    @Override
-    public String toString() {
-        return "TicketHold{" +
-                "holdId=" + holdId +
-                ", heldSeats=" + heldSeats +
-                ", customerEmail='" + customerEmail + '\'' +
-                ", expirationTime=" + expirationTime +
-                '}';
     }
 }

@@ -1,9 +1,8 @@
-package com.ykhaleq.airlineticketservice;
+package com.ykhaleq.airlineticketservice.service;
 
 import com.ykhaleq.airlineticketservice.model.Seat;
 import com.ykhaleq.airlineticketservice.model.SeatingLevel;
 import com.ykhaleq.airlineticketservice.repository.AirplaneLayoutRepository;
-import com.ykhaleq.airlineticketservice.service.PricingService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
