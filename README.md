@@ -78,7 +78,7 @@ The application will start at http://localhost:8080
 ```bash
 curl -X GET "http://localhost:8080/seats/available?levelNames=First%20Class"
 ```
-
+Postman```GET http://localhost:8080/seats/available```
 #### Response
 
 ```json
@@ -98,7 +98,13 @@ curl -X GET "http://localhost:8080/seats/available?levelNames=First%20Class"
 ```bash
 curl -X POST "http://localhost:8080/seats/hold" -H "Content-Type: application/json" -d '{"numSeats": 3, "customerEmail": "test@example.com"}'
 ```
-
+Postman - ```POST http://localhost:8080/seats/hold```
+```json
+{
+  "numSeats": 1,
+  "customerEmail": "example@test.com"
+}
+```
 #### Response
 
 ```json
@@ -125,11 +131,17 @@ curl -X POST "http://localhost:8080/seats/hold" -H "Content-Type: application/js
 
 ```
 #### 3. Reserve Held Seats
-##### Request
+##### Request (Must have existing hold id from the previous request)
 ```bash
-curl -X POST "http://localhost:8080/seats/reserve?holdId=1&customerEmail=test@example.com"
+curl -X POST "http://localhost:8080/seats/reserve"  -H "Content-Type: application/json" -d '{"holdId": 1, "customerEmail": "test@example.com"}'
 ```
-
+Postman - ```POST http://localhost:8080/seats/reserve```
+```json
+{
+  "holdId": 1,
+  "customerEmail": "example@test.com"
+}
+```
 #### Response
 
 ```json
@@ -138,9 +150,18 @@ curl -X POST "http://localhost:8080/seats/reserve?holdId=1&customerEmail=test@ex
 #### 4. Reserve Best Available Seats
 ##### Request
 ```bash
-curl -X POST "http://localhost:8080/seats/reserve-direct?numSeats=3&maxPrice=1000&levelNames=First%20Class&customerEmail=test@example.com"
+curl -X POST "http://localhost:8080/seats/reserve-direct"  -H "Content-Type: application/json" -d '{"numSeats": 1, "maxPrice": 1, "minPrice": 1, "levelNames": ["Business", "Economy"], "customerEmail": "test@example.com"}'
 ```
-
+Postman - ```POST http://localhost:8080/seats/reserve-direct```
+```json
+{
+  "numSeats": 10,
+  "maxPrice": 1200,
+  "minPrice": 100,
+  "levelNames": ["Business", "Economy"],
+  "customerEmail": "customer@example.com"
+}
+```
 #### Response
 
 ```json
