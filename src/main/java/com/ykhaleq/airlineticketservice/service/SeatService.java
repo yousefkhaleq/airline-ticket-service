@@ -74,10 +74,9 @@ public class SeatService {
         SeatingLevel firstClassLevel = layoutRepository.getSeatingLevel("First Class");
         List<Seat> availableSeats = new ArrayList<>();
 
-        // Find the best available seats in First Class
+        // Collect available seats without modifying their state
         for (Seat seat : firstClassLevel.getSeats()) {
-            if (!seat.isHeld() && !seat.isReserved() && availableSeats.size() < numSeats) {
-                seat.hold(); // Mark seat as held
+            if (!seat.isHeld() && !seat.isReserved()) {
                 availableSeats.add(seat);
             }
             if (availableSeats.size() == numSeats) {
@@ -88,6 +87,11 @@ public class SeatService {
         // If not enough seats are available, throw an exception
         if (availableSeats.size() < numSeats) {
             throw new IllegalArgumentException("Not enough available seats to hold.");
+        }
+
+        // Mark the seats as held only after validation
+        for (Seat seat : availableSeats) {
+            seat.hold(); // Mark seat as held
         }
 
         // Create a SeatHold and store it
