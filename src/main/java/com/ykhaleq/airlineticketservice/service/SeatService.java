@@ -7,6 +7,8 @@ import com.ykhaleq.airlineticketservice.model.SeatHold;
 import com.ykhaleq.airlineticketservice.model.SeatingLevel;
 import com.ykhaleq.airlineticketservice.repository.AirplaneLayoutRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -15,6 +17,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
+@EnableScheduling
 public class SeatService {
 
     private final AirplaneLayoutRepository layoutRepository;
@@ -30,6 +33,20 @@ public class SeatService {
         this.ticketHolds = new ConcurrentHashMap<>();
         this.holdExpirationSeconds = holdExpirationSeconds;
         this.pricingService = pricingService;
+    }
+
+    @Scheduled(fixedRate = 5000)
+    public void holdExpiration(){
+
+        ticketHolds.entrySet().removeIf(entry -> {
+            SeatHold hold = entry.getValue();
+            if (hold.isExpired()){
+                hold.getHeldSeats().forEach(Seat::release);
+                System.out.println("Hold expired: " + entry.getKey());
+                return true;
+            }
+            return false;
+        });
     }
 
     /**
